@@ -71,7 +71,16 @@ for (const entry of registry.packages) {
     });
   }
 
-  packages.push({ ...manifest, exports });
+  let testText;
+  if (manifest.tests) {
+    testText = await readFile(join(packageDir, manifest.tests), "utf8");
+  }
+
+  packages.push({
+    ...manifest,
+    exports,
+    ...(testText === undefined ? {} : { testText }),
+  });
 }
 
 const bundle = {

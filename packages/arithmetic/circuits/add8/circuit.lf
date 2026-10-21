@@ -1,0 +1,14 @@
+CIRCUIT ADD8
+  INPUT a : BUS(8)
+  INPUT b : BUS(8)
+  INPUT carry_in
+
+  low = ADD4(a[3:0], b[3:0], carry_in)
+  high = ADD4(a[7:4], b[7:4], low.carry_out)
+
+  sum = CONCAT(high.sum, low.sum)
+  carry_out = high.carry_out
+
+  OUTPUT sum
+  OUTPUT carry_out
+END

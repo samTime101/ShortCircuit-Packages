@@ -17,7 +17,8 @@ Everything that can be built from those fundamentals belongs here.
 | Package | Provides |
 |---|---|
 | `@shortcircuit/gates` | `NOT`, `AND`, `OR`, `BUFFER`, `NOR`, `XOR`, `XNOR` |
-| `@shortcircuit/arithmetic` | `HALF_ADDER`, `FULL_ADDER` |
+| `@shortcircuit/arithmetic` | `HALF_ADDER`, `FULL_ADDER`, `ADD4`, `ADD8` |
+| `@shortcircuit/selection` | `MUX` |
 
 The `gates` package uses value macros. Each macro is a real `.lf` source file:
 
@@ -74,6 +75,14 @@ packages/
     circuits/
       half-adder/circuit.lf
       full-adder/circuit.lf
+      add4/circuit.lf
+      add8/circuit.lf
+  selection/
+    package.json
+    manifest.json
+    macros/
+      mux/macro.lf
+    tests/
 ```
 
 Every package owns its docs, examples and tests. The app reads the manifest for

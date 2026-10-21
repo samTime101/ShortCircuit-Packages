@@ -10,6 +10,11 @@
       "name": "@shortcircuit/arithmetic",
       "version": "0.1.0",
       "manifest": "packages/arithmetic/manifest.json"
+    },
+    {
+      "name": "@shortcircuit/selection",
+      "version": "0.1.0",
+      "manifest": "packages/selection/manifest.json"
     }
   ]
 }

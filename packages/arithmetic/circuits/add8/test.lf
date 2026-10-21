@@ -1,0 +1,25 @@
+CIRCUIT ADD8_TEST
+  INPUT a : BUS(8)
+  INPUT b : BUS(8)
+  INPUT carry_in
+  added = ADD8(a, b, carry_in)
+  OUTPUT added.sum
+  OUTPUT added.carry_out
+END
+
+TEST ADD8_TEST
+  CASE "100 + 28"
+    INPUT a = 01100100
+    INPUT b = 00011100
+    INPUT carry_in = 0
+    EXPECT added.sum = 10000000
+    EXPECT added.carry_out = 0
+  END
+  CASE "overflow"
+    INPUT a = 11111111
+    INPUT b = 00000001
+    INPUT carry_in = 0
+    EXPECT added.sum = 00000000
+    EXPECT added.carry_out = 1
+  END
+END

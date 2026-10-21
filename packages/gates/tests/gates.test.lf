@@ -50,7 +50,7 @@ TEST GATE_TEST
     EXPECT nor_ab = 0
     EXPECT xor_ab = 0
     EXPECT xor_abc = 1
-    EXPECT xnor_ab = 0
+    EXPECT xnor_ab = 1
     EXPECT buffer_a = 1
   END
   CASE "mixed"

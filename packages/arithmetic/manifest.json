@@ -47,6 +47,46 @@
           { "name": "carry_out", "width": 1 }
         ]
       }
+    },
+    {
+      "kind": "circuit",
+      "name": "ADD4",
+      "group": "Arithmetic Circuits",
+      "summary": "Four-bit ripple-carry adder with carry in and carry out.",
+      "source": "circuits/add4/circuit.lf",
+      "docs": "circuits/add4/docs.md",
+      "tests": "circuits/add4/test.lf",
+      "ports": {
+        "inputs": [
+          { "name": "a", "width": 4 },
+          { "name": "b", "width": 4 },
+          { "name": "carry_in", "width": 1 }
+        ],
+        "outputs": [
+          { "name": "sum", "width": 4 },
+          { "name": "carry_out", "width": 1 }
+        ]
+      }
+    },
+    {
+      "kind": "circuit",
+      "name": "ADD8",
+      "group": "Arithmetic Circuits",
+      "summary": "Eight-bit adder built from two chained ADD4 circuits.",
+      "source": "circuits/add8/circuit.lf",
+      "docs": "circuits/add8/docs.md",
+      "tests": "circuits/add8/test.lf",
+      "ports": {
+        "inputs": [
+          { "name": "a", "width": 8 },
+          { "name": "b", "width": 8 },
+          { "name": "carry_in", "width": 1 }
+        ],
+        "outputs": [
+          { "name": "sum", "width": 8 },
+          { "name": "carry_out", "width": 1 }
+        ]
+      }
     }
   ]
 }

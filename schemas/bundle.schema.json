@@ -20,6 +20,8 @@
           "engine": { "type": "string" },
           "description": { "type": "string" },
           "recommendedAutoImport": { "type": "boolean" },
+          "tests": { "type": "string" },
+          "testText": { "type": "string" },
           "dependencies": { "type": "object" },
           "exports": {
             "type": "array",

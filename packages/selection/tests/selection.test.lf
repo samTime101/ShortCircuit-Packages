@@ -1,0 +1,24 @@
+CIRCUIT MUX_TEST
+  INPUT low : BUS(4)
+  INPUT high : BUS(4)
+  INPUT select
+
+  y = MUX(low, high, select)
+
+  OUTPUT y
+END
+
+TEST MUX_TEST
+  CASE "select low"
+    INPUT low = 0011
+    INPUT high = 1100
+    INPUT select = 0
+    EXPECT y = 0011
+  END
+  CASE "select high"
+    INPUT low = 0011
+    INPUT high = 1100
+    INPUT select = 1
+    EXPECT y = 1100
+  END
+END

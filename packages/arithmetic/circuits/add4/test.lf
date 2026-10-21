@@ -1,0 +1,32 @@
+CIRCUIT ADD4_TEST
+  INPUT a : BUS(4)
+  INPUT b : BUS(4)
+  INPUT carry_in
+  added = ADD4(a, b, carry_in)
+  OUTPUT added.sum
+  OUTPUT added.carry_out
+END
+
+TEST ADD4_TEST
+  CASE "3 + 4"
+    INPUT a = 0011
+    INPUT b = 0100
+    INPUT carry_in = 0
+    EXPECT added.sum = 0111
+    EXPECT added.carry_out = 0
+  END
+  CASE "15 + 1 wraps"
+    INPUT a = 1111
+    INPUT b = 0001
+    INPUT carry_in = 0
+    EXPECT added.sum = 0000
+    EXPECT added.carry_out = 1
+  END
+  CASE "carry in"
+    INPUT a = 0000
+    INPUT b = 0000
+    INPUT carry_in = 1
+    EXPECT added.sum = 0001
+    EXPECT added.carry_out = 0
+  END
+END

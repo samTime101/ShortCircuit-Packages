@@ -1,0 +1,9 @@
+{
+  "name": "@shortcircuit/selection",
+  "version": "0.1.0",
+  "description": "Multiplexers and selection circuits for Short Circuit.",
+  "license": "MIT",
+  "dependencies": {
+    "@shortcircuit/gates": "^0.1.0"
+  }
+}

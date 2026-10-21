@@ -109,6 +109,8 @@ Rules:
 - Every export MUST point at an existing `source`.
 - A macro source MUST declare a `MACRO` with the export's `name`.
 - A circuit source MUST contain a `CIRCUIT` with the export's `name`.
+- `tests` at the package level points at package-wide tests that exercise
+  multiple exports.
 - `docs`, `tests`, `group`, `summary`, and `examples` are optional catalog
   metadata.
 - `internal: true` hides an export from docs and completions while keeping it
@@ -194,6 +196,8 @@ circuits. It cannot add simulator opcodes.
 
 - `docs` points at Markdown owned by the package.
 - `tests` points at a `.lf` file containing `TEST`/`CASE`/`EXPECT` blocks.
+- A package-level `tests` file complements per-circuit tests and is embedded as
+  `testText` in the bundle.
 - Package docs are rendered by the app's docs shell.
 - Package tests run against the same compiler and simulator as user tests.
 - A test file may define test-only wrapper circuits, but it must not redefine a

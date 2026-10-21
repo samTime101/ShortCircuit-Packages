@@ -1,0 +1,3 @@
+MACRO MUX(zero, one, select)
+  BODY OR(AND(zero, NOT(BROADCAST(select, zero))), AND(one, BROADCAST(select, zero)))
+END

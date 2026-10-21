@@ -1,0 +1,26 @@
+{
+  "schema": "shortcircuit.package/v1",
+  "name": "@shortcircuit/selection",
+  "version": "0.1.0",
+  "engine": "^0.1.0",
+  "recommendedAutoImport": true,
+  "description": "NAND-derived selection circuits.",
+  "dependencies": {
+    "@shortcircuit/gates": "^0.1.0"
+  },
+  "tests": "tests/selection.test.lf",
+  "exports": [
+    {
+      "kind": "macro",
+      "name": "MUX",
+      "source": "macros/mux/macro.lf",
+      "group": "Selection",
+      "summary": "Two-input multiplexer. Expands to NAND-derived gates and BROADCAST.",
+      "docs": "docs/mux.md",
+      "examples": [
+        "y = MUX(low, high, select)"
+      ],
+      "widthRule": "Result width = common input width; select is one bit"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+CIRCUIT ADD4
+  INPUT a : BUS(4)
+  INPUT b : BUS(4)
+  INPUT carry_in
+
+  bit0 = FULL_ADDER(a[0], b[0], carry_in)
+  bit1 = FULL_ADDER(a[1], b[1], bit0.carry_out)
+  bit2 = FULL_ADDER(a[2], b[2], bit1.carry_out)
+  bit3 = FULL_ADDER(a[3], b[3], bit2.carry_out)
+
+  sum = CONCAT(bit3.sum, bit2.sum, bit1.sum, bit0.sum)
+  carry_out = bit3.carry_out
+
+  OUTPUT sum
+  OUTPUT carry_out
+END
