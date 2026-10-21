@@ -13,7 +13,9 @@
       "group": "Basic Logic Gates",
       "summary": "Bitwise inversion. Expands to NAND(x, x).",
       "docs": "docs/not.md",
-      "examples": ["y = NOT(a)"]
+      "examples": [
+        "y = NOT(a)"
+      ]
     },
     {
       "kind": "macro",
@@ -22,16 +24,20 @@
       "group": "Basic Logic Gates",
       "summary": "Bitwise AND. Expands to NOT(NAND(a, b, ...)).",
       "docs": "docs/and.md",
-      "examples": ["y = AND(a, b)"]
+      "examples": [
+        "y = AND(a, b)"
+      ]
     },
     {
       "kind": "macro",
       "name": "OR",
       "source": "macros/or/macro.lf",
       "group": "Basic Logic Gates",
-      "summary": "Bitwise OR. Expands to NAND(NOT(a), NOT(b), ...).",
+      "summary": "Bitwise OR. Folds OR2 across the inputs.",
       "docs": "docs/or.md",
-      "examples": ["y = OR(a, b)"]
+      "examples": [
+        "y = OR(a, b)"
+      ]
     },
     {
       "kind": "macro",
@@ -40,7 +46,17 @@
       "group": "Basic Logic Gates",
       "summary": "Identity buffer. Expands to NOT(NOT(x)).",
       "docs": "docs/buffer.md",
-      "examples": ["y = BUFFER(a)"]
+      "examples": [
+        "y = BUFFER(a)"
+      ]
+    },
+    {
+      "kind": "macro",
+      "name": "OR2",
+      "source": "macros/or2/macro.lf",
+      "internal": true,
+      "group": "Basic Logic Gates",
+      "summary": "Internal binary OR helper."
     },
     {
       "kind": "macro",
@@ -49,7 +65,9 @@
       "group": "Universal Logic Gates",
       "summary": "Bitwise NOR. Expands to NOT(OR(a, b, ...)).",
       "docs": "docs/nor.md",
-      "examples": ["y = NOR(a, b)"]
+      "examples": [
+        "y = NOR(a, b)"
+      ]
     },
     {
       "kind": "macro",
@@ -66,7 +84,9 @@
       "group": "Exclusive Gates",
       "summary": "Bitwise XOR. Folds XOR2 across the inputs.",
       "docs": "docs/xor.md",
-      "examples": ["y = XOR(a, b)"]
+      "examples": [
+        "y = XOR(a, b)"
+      ]
     },
     {
       "kind": "macro",
@@ -75,7 +95,9 @@
       "group": "Exclusive Gates",
       "summary": "Bitwise XNOR. Expands to NOT(XOR(a, b, ...)).",
       "docs": "docs/xnor.md",
-      "examples": ["y = XNOR(a, b)"]
+      "examples": [
+        "y = XNOR(a, b)"
+      ]
     }
   ]
 }

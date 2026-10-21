@@ -1,0 +1,3 @@
+MACRO OR2(a, b)
+  BODY NAND(NOT(a), NOT(b))
+END

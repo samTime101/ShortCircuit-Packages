@@ -1,6 +1,6 @@
 {
   "schema": "shortcircuit.packages/v1",
-  "generatedAt": "2026-10-21T08:42:25.148Z",
+  "generatedAt": "2026-10-21T08:43:58.146Z",
   "packages": [
     {
       "schema": "shortcircuit.package/v1",
@@ -41,13 +41,13 @@
           "name": "OR",
           "source": "macros/or/macro.lf",
           "group": "Basic Logic Gates",
-          "summary": "Bitwise OR. Expands to NAND(NOT(a), NOT(b), ...).",
+          "summary": "Bitwise OR. Folds OR2 across the inputs.",
           "docs": "docs/or.md",
           "examples": [
             "y = OR(a, b)"
           ],
-          "sourceText": "MACRO OR(a, b, ...)\n  BODY NAND(NOT(a), NOT(b), ...)\nEND\n",
-          "docsText": "# OR\n\nBitwise OR. Variadic: all inputs are combined by one gate.\n\n```logicflow\ny = OR(a, b)\ny3 = OR(a, b, c)\n```\n\nPackage expansion:\n\n```text\nOR(a, b, ...) = NAND(NOT(a), NOT(b), ...)\n```\n"
+          "sourceText": "MACRO OR(a, b, ...)\n  FOLD OR2\nEND\n",
+          "docsText": "# OR\n\nBitwise OR. Variadic: the result is 1 when any input bit is 1.\n\n```logicflow\ny = OR(a, b)\ny3 = OR(a, b, c)\n```\n\nThe package folds the internal binary helper `OR2` across the inputs.\n"
         },
         {
           "kind": "macro",
@@ -61,6 +61,15 @@
           ],
           "sourceText": "MACRO BUFFER(x)\n  BODY NOT(NOT(x))\nEND\n",
           "docsText": "# BUFFER\n\nPasses its input through unchanged.\n\n```logicflow\ny = BUFFER(a)\n```\n\nPackage expansion:\n\n```text\nBUFFER(x) = NOT(NOT(x))\n```\n"
+        },
+        {
+          "kind": "macro",
+          "name": "OR2",
+          "source": "macros/or2/macro.lf",
+          "internal": true,
+          "group": "Basic Logic Gates",
+          "summary": "Internal binary OR helper.",
+          "sourceText": "MACRO OR2(a, b)\n  BODY NAND(NOT(a), NOT(b))\nEND\n"
         },
         {
           "kind": "macro",
