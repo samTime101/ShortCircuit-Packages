@@ -1,6 +1,6 @@
 {
   "schema": "shortcircuit.packages/v1",
-  "generatedAt": "2026-10-21T08:43:58.146Z",
+  "generatedAt": "2026-10-21T08:45:58.878Z",
   "packages": [
     {
       "schema": "shortcircuit.package/v1",
@@ -20,6 +20,7 @@
           "examples": [
             "y = NOT(a)"
           ],
+          "widthRule": "Result width = input width",
           "sourceText": "MACRO NOT(x)\n  BODY NAND(x, x)\nEND\n",
           "docsText": "# NOT\n\nInverts every bit of its input.\n\n```logicflow\ny = NOT(a)\n```\n\nPackage expansion:\n\n```text\nNOT(x) = NAND(x, x)\n```\n"
         },
@@ -33,6 +34,7 @@
           "examples": [
             "y = AND(a, b)"
           ],
+          "widthRule": "Result width = common input width",
           "sourceText": "MACRO AND(a, b, ...)\n  BODY NOT(NAND(a, b, ...))\nEND\n",
           "docsText": "# AND\n\nBitwise AND. Variadic: all inputs are combined by one gate.\n\n```logicflow\ny = AND(a, b)\ny3 = AND(a, b, c)\n```\n\nPackage expansion:\n\n```text\nAND(a, b, ...) = NOT(NAND(a, b, ...))\n```\n"
         },
@@ -46,6 +48,7 @@
           "examples": [
             "y = OR(a, b)"
           ],
+          "widthRule": "Result width = common input width",
           "sourceText": "MACRO OR(a, b, ...)\n  FOLD OR2\nEND\n",
           "docsText": "# OR\n\nBitwise OR. Variadic: the result is 1 when any input bit is 1.\n\n```logicflow\ny = OR(a, b)\ny3 = OR(a, b, c)\n```\n\nThe package folds the internal binary helper `OR2` across the inputs.\n"
         },
@@ -59,6 +62,7 @@
           "examples": [
             "y = BUFFER(a)"
           ],
+          "widthRule": "Result width = input width",
           "sourceText": "MACRO BUFFER(x)\n  BODY NOT(NOT(x))\nEND\n",
           "docsText": "# BUFFER\n\nPasses its input through unchanged.\n\n```logicflow\ny = BUFFER(a)\n```\n\nPackage expansion:\n\n```text\nBUFFER(x) = NOT(NOT(x))\n```\n"
         },
@@ -81,6 +85,7 @@
           "examples": [
             "y = NOR(a, b)"
           ],
+          "widthRule": "Result width = common input width",
           "sourceText": "MACRO NOR(a, b, ...)\n  BODY NOT(OR(a, b, ...))\nEND\n",
           "docsText": "# NOR\n\nBitwise NOR: high only when every input bit is low.\n\n```logicflow\ny = NOR(a, b)\n```\n\nPackage expansion:\n\n```text\nNOR(a, b, ...) = NOT(OR(a, b, ...))\n```\n"
         },
@@ -103,6 +108,7 @@
           "examples": [
             "y = XOR(a, b)"
           ],
+          "widthRule": "Result width = common input width",
           "sourceText": "MACRO XOR(a, b, ...)\n  FOLD XOR2\nEND\n",
           "docsText": "# XOR\n\nBitwise exclusive OR. Variadic: the result is 1 where an odd number of input\nbits are 1.\n\n```logicflow\ny = XOR(a, b)\nparity = XOR(a, b, c)\n```\n\nThe package folds the internal binary helper `XOR2` across the inputs. Each\nbinary step is built from NAND.\n"
         },
@@ -116,6 +122,7 @@
           "examples": [
             "y = XNOR(a, b)"
           ],
+          "widthRule": "Result width = common input width",
           "sourceText": "MACRO XNOR(a, b, ...)\n  BODY NOT(XOR(a, b, ...))\nEND\n",
           "docsText": "# XNOR\n\nBitwise exclusive NOR. With two inputs this is an equality check.\n\n```logicflow\nsame = XNOR(a, b)\n```\n\nPackage expansion:\n\n```text\nXNOR(a, b, ...) = NOT(XOR(a, b, ...))\n```\n"
         }

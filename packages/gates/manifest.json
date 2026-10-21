@@ -15,7 +15,8 @@
       "docs": "docs/not.md",
       "examples": [
         "y = NOT(a)"
-      ]
+      ],
+      "widthRule": "Result width = input width"
     },
     {
       "kind": "macro",
@@ -26,7 +27,8 @@
       "docs": "docs/and.md",
       "examples": [
         "y = AND(a, b)"
-      ]
+      ],
+      "widthRule": "Result width = common input width"
     },
     {
       "kind": "macro",
@@ -37,7 +39,8 @@
       "docs": "docs/or.md",
       "examples": [
         "y = OR(a, b)"
-      ]
+      ],
+      "widthRule": "Result width = common input width"
     },
     {
       "kind": "macro",
@@ -48,7 +51,8 @@
       "docs": "docs/buffer.md",
       "examples": [
         "y = BUFFER(a)"
-      ]
+      ],
+      "widthRule": "Result width = input width"
     },
     {
       "kind": "macro",
@@ -67,7 +71,8 @@
       "docs": "docs/nor.md",
       "examples": [
         "y = NOR(a, b)"
-      ]
+      ],
+      "widthRule": "Result width = common input width"
     },
     {
       "kind": "macro",
@@ -86,7 +91,8 @@
       "docs": "docs/xor.md",
       "examples": [
         "y = XOR(a, b)"
-      ]
+      ],
+      "widthRule": "Result width = common input width"
     },
     {
       "kind": "macro",
@@ -97,7 +103,8 @@
       "docs": "docs/xnor.md",
       "examples": [
         "y = XNOR(a, b)"
-      ]
+      ],
+      "widthRule": "Result width = common input width"
     }
   ]
 }
