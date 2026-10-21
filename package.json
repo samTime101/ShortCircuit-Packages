@@ -1,0 +1,22 @@
+{
+  "name": "@shortcircuit/packages",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The package registry for Short Circuit and LogicFlow.",
+  "type": "module",
+  "bin": {
+    "shortcircuit-package": "./scripts/package.mjs"
+  },
+  "scripts": {
+    "package": "node scripts/package.mjs",
+    "package:init": "node scripts/package.mjs init",
+    "package:build": "node scripts/package.mjs build",
+    "package:test": "node scripts/package.mjs test",
+    "package:check": "node scripts/package.mjs check",
+    "package:list": "node scripts/package.mjs list",
+    "test:cli": "node --test scripts/package.test.mjs"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  }
+}
