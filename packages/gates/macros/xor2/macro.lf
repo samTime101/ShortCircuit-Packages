@@ -1,0 +1,3 @@
+MACRO XOR2(a, b)
+  BODY NAND(NAND(a, NAND(a, b)), NAND(b, NAND(a, b)))
+END

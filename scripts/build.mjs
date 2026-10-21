@@ -5,6 +5,9 @@
  * The source of truth is registry.json + each package manifest + the package's
  * .lf/docs/test files. This script inlines those files into one JSON document so
  * the app can load packages without filesystem access or a runtime fetch.
+ *
+ * Macro and circuit bodies are never duplicated in the manifest. The manifest
+ * points at a real source file; this build step embeds that file for offline use.
  */
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
@@ -21,11 +24,6 @@ for (const entry of registry.packages) {
   const exports = [];
 
   for (const item of manifest.exports) {
-    if (item.kind !== "circuit") {
-      exports.push(item);
-      continue;
-    }
-
     const source = await readFile(join(packageDir, item.source), "utf8");
     const docs = item.docs ? await readFile(join(packageDir, item.docs), "utf8") : undefined;
     const tests = item.tests ? await readFile(join(packageDir, item.tests), "utf8") : undefined;

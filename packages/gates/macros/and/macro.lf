@@ -1,0 +1,3 @@
+MACRO AND(a, b, ...)
+  BODY NOT(NAND(a, b, ...))
+END

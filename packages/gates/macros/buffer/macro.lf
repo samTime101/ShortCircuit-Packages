@@ -1,0 +1,3 @@
+MACRO BUFFER(x)
+  BODY NOT(NOT(x))
+END

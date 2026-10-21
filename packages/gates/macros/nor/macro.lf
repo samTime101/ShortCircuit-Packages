@@ -1,0 +1,3 @@
+MACRO NOR(a, b, ...)
+  BODY NOT(OR(a, b, ...))
+END

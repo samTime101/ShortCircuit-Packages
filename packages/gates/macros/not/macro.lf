@@ -1,0 +1,3 @@
+MACRO NOT(x)
+  BODY NAND(x, x)
+END

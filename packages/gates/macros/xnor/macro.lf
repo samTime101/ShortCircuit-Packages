@@ -1,0 +1,3 @@
+MACRO XNOR(a, b, ...)
+  BODY NOT(XOR(a, b, ...))
+END
