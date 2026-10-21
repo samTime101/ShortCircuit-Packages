@@ -32,6 +32,8 @@ bodies, or any other implementation copied out of a source file.
 
 ## 2. Registry
 
+JSON Schema: [`schemas/registry.schema.json`](schemas/registry.schema.json).
+
 `registry.json` lists the packages known to the package manager.
 
 ```json
@@ -51,6 +53,10 @@ The registry is static. The app MUST NOT discover packages by scraping GitHub
 folders or by calling the GitHub directory API.
 
 ## 3. Package manifest
+
+JSON Schema: [`schemas/package-manifest.schema.json`](schemas/package-manifest.schema.json).
+The schema forbids `body`, `fold`, `args`, `minArgs`, `maxArgs`, and
+`variadic`; those are parsed from the macro source.
 
 ```json
 {
@@ -194,6 +200,11 @@ circuits. It cannot add simulator opcodes.
   public export.
 
 ## 7. Bundled snapshot
+
+JSON Schema: [`schemas/bundle.schema.json`](schemas/bundle.schema.json).
+`scripts/build.mjs` validates that manifests and package metadata agree, forbids
+implementation keys in macro manifest entries, verifies that each source
+declares the exported name, and then writes the snapshot.
 
 `dist/packages.json` is generated from the registry, manifests, and source
 files:

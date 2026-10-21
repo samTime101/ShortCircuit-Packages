@@ -31,7 +31,9 @@ The `arithmetic` package uses ordinary `.lf` circuits.
 
 ## Format
 
-See [SPEC.md](SPEC.md) for the package format.
+See [SPEC.md](SPEC.md) for the package format and [`schemas/`](schemas/) for the
+JSON Schemas. `scripts/build.mjs` validates the manifest before it writes the
+bundled snapshot.
 
 The short version:
 

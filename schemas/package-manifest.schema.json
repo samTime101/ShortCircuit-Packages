@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shortcircuit.dev/schemas/package-manifest.schema.json",
+  "title": "Short Circuit package manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "name", "version", "exports"],
+  "properties": {
+    "schema": { "const": "shortcircuit.package/v1" },
+    "name": {
+      "type": "string",
+      "pattern": "^@[a-z0-9][a-z0-9._-]*/[a-z0-9][a-z0-9._-]*$"
+    },
+    "version": { "type": "string" },
+    "engine": { "type": "string" },
+    "description": { "type": "string" },
+    "recommendedAutoImport": { "type": "boolean" },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "exports": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/macroExport" },
+          { "$ref": "#/$defs/circuitExport" }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "commonExport": {
+      "type": "object",
+      "required": ["kind", "name", "source"],
+      "properties": {
+        "kind": { "type": "string" },
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "source": { "type": "string", "minLength": 1 },
+        "internal": { "type": "boolean" },
+        "group": { "type": "string" },
+        "summary": { "type": "string" },
+        "docs": { "type": "string" },
+        "examples": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "macroExport": {
+      "allOf": [{ "$ref": "#/$defs/commonExport" }],
+      "properties": {
+        "kind": { "const": "macro" }
+      },
+      "not": {
+        "anyOf": [
+          { "required": ["body"] },
+          { "required": ["fold"] },
+          { "required": ["args"] },
+          { "required": ["minArgs"] },
+          { "required": ["maxArgs"] },
+          { "required": ["variadic"] }
+        ]
+      }
+    },
+    "circuitExport": {
+      "allOf": [{ "$ref": "#/$defs/commonExport" }],
+      "properties": {
+        "kind": { "const": "circuit" },
+        "tests": { "type": "string" },
+        "ports": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "inputs": { "$ref": "#/$defs/ports" },
+            "outputs": { "$ref": "#/$defs/ports" }
+          }
+        }
+      }
+    },
+    "ports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "width"],
+        "properties": {
+          "name": { "type": "string" },
+          "width": { "type": "integer", "minimum": 1 }
+        }
+      }
+    }
+  }
+}

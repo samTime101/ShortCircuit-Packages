@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shortcircuit.dev/schemas/bundle.schema.json",
+  "title": "Short Circuit bundled package snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "packages"],
+  "properties": {
+    "schema": { "const": "shortcircuit.packages/v1" },
+    "generatedAt": { "type": "string" },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["schema", "name", "version", "exports"],
+        "properties": {
+          "schema": { "const": "shortcircuit.package/v1" },
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "engine": { "type": "string" },
+          "description": { "type": "string" },
+          "recommendedAutoImport": { "type": "boolean" },
+          "dependencies": { "type": "object" },
+          "exports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["kind", "name", "source", "sourceText"],
+              "properties": {
+                "kind": { "enum": ["macro", "circuit"] },
+                "name": { "type": "string" },
+                "source": { "type": "string" },
+                "sourceText": { "type": "string" },
+                "docs": { "type": "string" },
+                "docsText": { "type": "string" },
+                "tests": { "type": "string" },
+                "testText": { "type": "string" },
+                "group": { "type": "string" },
+                "summary": { "type": "string" },
+                "internal": { "type": "boolean" },
+                "examples": { "type": "array", "items": { "type": "string" } },
+                "ports": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

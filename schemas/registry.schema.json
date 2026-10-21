@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shortcircuit.dev/schemas/registry.schema.json",
+  "title": "Short Circuit package registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "packages"],
+  "properties": {
+    "schema": { "const": "shortcircuit.registry/v1" },
+    "packages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "version", "manifest"],
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "manifest": { "type": "string" },
+          "integrity": { "type": "string" }
+        }
+      }
+    }
+  }
+}
