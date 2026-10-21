@@ -1,0 +1,15 @@
+{
+  "schema": "shortcircuit.registry/v1",
+  "packages": [
+    {
+      "name": "@shortcircuit/gates",
+      "version": "0.1.0",
+      "manifest": "packages/gates/manifest.json"
+    },
+    {
+      "name": "@shortcircuit/arithmetic",
+      "version": "0.1.0",
+      "manifest": "packages/arithmetic/manifest.json"
+    }
+  ]
+}

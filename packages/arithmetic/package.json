@@ -1,0 +1,9 @@
+{
+  "name": "@shortcircuit/arithmetic",
+  "version": "0.1.0",
+  "description": "Arithmetic circuits for Short Circuit.",
+  "license": "MIT",
+  "dependencies": {
+    "@shortcircuit/gates": "^0.1.0"
+  }
+}

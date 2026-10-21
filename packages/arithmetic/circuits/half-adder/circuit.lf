@@ -1,0 +1,10 @@
+CIRCUIT HALF_ADDER
+  INPUT a
+  INPUT b
+
+  sum = XOR(a, b)
+  carry = AND(a, b)
+
+  OUTPUT sum
+  OUTPUT carry
+END

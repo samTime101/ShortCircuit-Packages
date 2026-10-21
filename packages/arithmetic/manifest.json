@@ -1,0 +1,52 @@
+{
+  "schema": "shortcircuit.package/v1",
+  "name": "@shortcircuit/arithmetic",
+  "version": "0.1.0",
+  "engine": "^0.1.0",
+  "recommendedAutoImport": true,
+  "description": "Small arithmetic circuits built from the gates package.",
+  "dependencies": {
+    "@shortcircuit/gates": "^0.1.0"
+  },
+  "exports": [
+    {
+      "kind": "circuit",
+      "name": "HALF_ADDER",
+      "group": "Arithmetic Circuits",
+      "summary": "One-bit half adder: sum = XOR(a, b), carry = AND(a, b).",
+      "source": "circuits/half-adder/circuit.lf",
+      "docs": "circuits/half-adder/docs.md",
+      "tests": "circuits/half-adder/test.lf",
+      "ports": {
+        "inputs": [
+          { "name": "a", "width": 1 },
+          { "name": "b", "width": 1 }
+        ],
+        "outputs": [
+          { "name": "sum", "width": 1 },
+          { "name": "carry", "width": 1 }
+        ]
+      }
+    },
+    {
+      "kind": "circuit",
+      "name": "FULL_ADDER",
+      "group": "Arithmetic Circuits",
+      "summary": "One-bit full adder built from two half adders and an OR gate.",
+      "source": "circuits/full-adder/circuit.lf",
+      "docs": "circuits/full-adder/docs.md",
+      "tests": "circuits/full-adder/test.lf",
+      "ports": {
+        "inputs": [
+          { "name": "a", "width": 1 },
+          { "name": "b", "width": 1 },
+          { "name": "carry_in", "width": 1 }
+        ],
+        "outputs": [
+          { "name": "sum", "width": 1 },
+          { "name": "carry_out", "width": 1 }
+        ]
+      }
+    }
+  ]
+}

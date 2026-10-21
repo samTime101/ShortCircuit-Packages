@@ -1,0 +1,14 @@
+CIRCUIT FULL_ADDER
+  INPUT a
+  INPUT b
+  INPUT carry_in
+
+  first = HALF_ADDER(a, b)
+  second = HALF_ADDER(first.sum, carry_in)
+
+  sum = second.sum
+  carry_out = OR(first.carry, second.carry)
+
+  OUTPUT sum
+  OUTPUT carry_out
+END

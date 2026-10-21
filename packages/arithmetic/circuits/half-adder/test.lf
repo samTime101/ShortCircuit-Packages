@@ -1,0 +1,28 @@
+CIRCUIT HALF_ADDER_TEST
+  INPUT a
+  INPUT b
+  half = HALF_ADDER(a, b)
+  OUTPUT half.sum
+  OUTPUT half.carry
+END
+
+TEST HALF_ADDER_TEST
+  CASE "0 + 0"
+    INPUT a = 0
+    INPUT b = 0
+    EXPECT half.sum = 0
+    EXPECT half.carry = 0
+  END
+  CASE "0 + 1"
+    INPUT a = 0
+    INPUT b = 1
+    EXPECT half.sum = 1
+    EXPECT half.carry = 0
+  END
+  CASE "1 + 1"
+    INPUT a = 1
+    INPUT b = 1
+    EXPECT half.sum = 0
+    EXPECT half.carry = 1
+  END
+END

@@ -1,0 +1,6 @@
+{
+  "name": "@shortcircuit/gates",
+  "version": "0.1.0",
+  "description": "NAND-derived logic gates for Short Circuit.",
+  "license": "MIT"
+}

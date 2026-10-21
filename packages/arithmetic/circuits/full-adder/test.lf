@@ -1,0 +1,25 @@
+CIRCUIT FULL_ADDER_TEST
+  INPUT a
+  INPUT b
+  INPUT carry_in
+  full = FULL_ADDER(a, b, carry_in)
+  OUTPUT full.sum
+  OUTPUT full.carry_out
+END
+
+TEST FULL_ADDER_TEST
+  CASE "0 + 0 + 0"
+    INPUT a = 0
+    INPUT b = 0
+    INPUT carry_in = 0
+    EXPECT full.sum = 0
+    EXPECT full.carry_out = 0
+  END
+  CASE "1 + 1 + 1"
+    INPUT a = 1
+    INPUT b = 1
+    INPUT carry_in = 1
+    EXPECT full.sum = 1
+    EXPECT full.carry_out = 1
+  END
+END

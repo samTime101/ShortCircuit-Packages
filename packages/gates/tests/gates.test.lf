@@ -1,0 +1,70 @@
+CIRCUIT GATE_TEST
+  INPUT a
+  INPUT b
+  INPUT c
+
+  not_a = NOT(a)
+  and_ab = AND(a, b)
+  and_abc = AND(a, b, c)
+  or_ab = OR(a, b)
+  nor_ab = NOR(a, b)
+  xor_ab = XOR(a, b)
+  xor_abc = XOR(a, b, c)
+  xnor_ab = XNOR(a, b)
+  buffer_a = BUFFER(a)
+
+  OUTPUT not_a
+  OUTPUT and_ab
+  OUTPUT and_abc
+  OUTPUT or_ab
+  OUTPUT nor_ab
+  OUTPUT xor_ab
+  OUTPUT xor_abc
+  OUTPUT xnor_ab
+  OUTPUT buffer_a
+END
+
+TEST GATE_TEST
+  CASE "all low"
+    INPUT a = 0
+    INPUT b = 0
+    INPUT c = 0
+    EXPECT not_a = 1
+    EXPECT and_ab = 0
+    EXPECT and_abc = 0
+    EXPECT or_ab = 0
+    EXPECT nor_ab = 1
+    EXPECT xor_ab = 0
+    EXPECT xor_abc = 0
+    EXPECT xnor_ab = 1
+    EXPECT buffer_a = 0
+  END
+  CASE "all high"
+    INPUT a = 1
+    INPUT b = 1
+    INPUT c = 1
+    EXPECT not_a = 0
+    EXPECT and_ab = 1
+    EXPECT and_abc = 1
+    EXPECT or_ab = 1
+    EXPECT nor_ab = 0
+    EXPECT xor_ab = 0
+    EXPECT xor_abc = 1
+    EXPECT xnor_ab = 0
+    EXPECT buffer_a = 1
+  END
+  CASE "mixed"
+    INPUT a = 1
+    INPUT b = 0
+    INPUT c = 1
+    EXPECT not_a = 0
+    EXPECT and_ab = 0
+    EXPECT and_abc = 0
+    EXPECT or_ab = 1
+    EXPECT nor_ab = 0
+    EXPECT xor_ab = 1
+    EXPECT xor_abc = 0
+    EXPECT xnor_ab = 0
+    EXPECT buffer_a = 1
+  END
+END

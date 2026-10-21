@@ -1,0 +1,245 @@
+{
+  "schema": "shortcircuit.packages/v1",
+  "generatedAt": "2026-10-21T08:24:07.573Z",
+  "packages": [
+    {
+      "schema": "shortcircuit.package/v1",
+      "name": "@shortcircuit/gates",
+      "version": "0.1.0",
+      "engine": "^0.1.0",
+      "recommendedAutoImport": true,
+      "description": "Basic logic gates built from NAND.",
+      "exports": [
+        {
+          "kind": "macro",
+          "name": "NOT",
+          "args": [
+            "x"
+          ],
+          "minArgs": 1,
+          "maxArgs": 1,
+          "signature": "NOT(x)",
+          "group": "Basic Logic Gates",
+          "summary": "Bitwise inversion. Expands to NAND(x, x).",
+          "body": "NAND(x, x)",
+          "docs": "docs/not.md",
+          "examples": [
+            "y = NOT(a)"
+          ]
+        },
+        {
+          "kind": "macro",
+          "name": "AND",
+          "args": [
+            "a",
+            "b"
+          ],
+          "minArgs": 2,
+          "maxArgs": null,
+          "variadic": true,
+          "signature": "AND(a, b, ...)",
+          "group": "Basic Logic Gates",
+          "summary": "Bitwise AND. Expands to NOT(NAND(a, b, ...)).",
+          "body": "NOT(NAND(a, b, ...))",
+          "docs": "docs/and.md",
+          "examples": [
+            "y = AND(a, b)"
+          ]
+        },
+        {
+          "kind": "macro",
+          "name": "OR",
+          "args": [
+            "a",
+            "b"
+          ],
+          "minArgs": 2,
+          "maxArgs": null,
+          "variadic": true,
+          "signature": "OR(a, b, ...)",
+          "group": "Basic Logic Gates",
+          "summary": "Bitwise OR. Expands to NAND(NOT(a), NOT(b), ...).",
+          "body": "NAND(NOT(a), NOT(b), ...)",
+          "docs": "docs/or.md",
+          "examples": [
+            "y = OR(a, b)"
+          ]
+        },
+        {
+          "kind": "macro",
+          "name": "BUFFER",
+          "args": [
+            "x"
+          ],
+          "minArgs": 1,
+          "maxArgs": 1,
+          "signature": "BUFFER(x)",
+          "group": "Basic Logic Gates",
+          "summary": "Identity buffer. Expands to NOT(NOT(x)).",
+          "body": "NOT(NOT(x))",
+          "docs": "docs/buffer.md",
+          "examples": [
+            "y = BUFFER(a)"
+          ]
+        },
+        {
+          "kind": "macro",
+          "name": "NOR",
+          "args": [
+            "a",
+            "b"
+          ],
+          "minArgs": 2,
+          "maxArgs": null,
+          "variadic": true,
+          "signature": "NOR(a, b, ...)",
+          "group": "Universal Logic Gates",
+          "summary": "Bitwise NOR. Expands to NOT(OR(a, b, ...)).",
+          "body": "NOT(OR(a, b, ...))",
+          "docs": "docs/nor.md",
+          "examples": [
+            "y = NOR(a, b)"
+          ]
+        },
+        {
+          "kind": "macro",
+          "name": "XOR2",
+          "internal": true,
+          "args": [
+            "a",
+            "b"
+          ],
+          "minArgs": 2,
+          "maxArgs": 2,
+          "signature": "XOR2(a, b)",
+          "group": "Exclusive Gates",
+          "summary": "Internal binary XOR helper.",
+          "body": "NAND(NAND(a, NAND(a, b)), NAND(b, NAND(a, b)))"
+        },
+        {
+          "kind": "macro",
+          "name": "XOR",
+          "args": [
+            "a",
+            "b"
+          ],
+          "minArgs": 2,
+          "maxArgs": null,
+          "variadic": true,
+          "fold": "XOR2",
+          "signature": "XOR(a, b, ...)",
+          "group": "Exclusive Gates",
+          "summary": "Bitwise XOR. Folds XOR2 across the inputs.",
+          "docs": "docs/xor.md",
+          "examples": [
+            "y = XOR(a, b)"
+          ]
+        },
+        {
+          "kind": "macro",
+          "name": "XNOR",
+          "args": [
+            "a",
+            "b"
+          ],
+          "minArgs": 2,
+          "maxArgs": null,
+          "variadic": true,
+          "signature": "XNOR(a, b, ...)",
+          "group": "Exclusive Gates",
+          "summary": "Bitwise XNOR. Expands to NOT(XOR(a, b, ...)).",
+          "body": "NOT(XOR(a, b, ...))",
+          "docs": "docs/xnor.md",
+          "examples": [
+            "y = XNOR(a, b)"
+          ]
+        }
+      ]
+    },
+    {
+      "schema": "shortcircuit.package/v1",
+      "name": "@shortcircuit/arithmetic",
+      "version": "0.1.0",
+      "engine": "^0.1.0",
+      "recommendedAutoImport": true,
+      "description": "Small arithmetic circuits built from the gates package.",
+      "dependencies": {
+        "@shortcircuit/gates": "^0.1.0"
+      },
+      "exports": [
+        {
+          "kind": "circuit",
+          "name": "HALF_ADDER",
+          "group": "Arithmetic Circuits",
+          "summary": "One-bit half adder: sum = XOR(a, b), carry = AND(a, b).",
+          "source": "circuits/half-adder/circuit.lf",
+          "docs": "circuits/half-adder/docs.md",
+          "tests": "circuits/half-adder/test.lf",
+          "ports": {
+            "inputs": [
+              {
+                "name": "a",
+                "width": 1
+              },
+              {
+                "name": "b",
+                "width": 1
+              }
+            ],
+            "outputs": [
+              {
+                "name": "sum",
+                "width": 1
+              },
+              {
+                "name": "carry",
+                "width": 1
+              }
+            ]
+          },
+          "sourceText": "CIRCUIT HALF_ADDER\n  INPUT a\n  INPUT b\n\n  sum = XOR(a, b)\n  carry = AND(a, b)\n\n  OUTPUT sum\n  OUTPUT carry\nEND\n",
+          "docsText": "# HALF_ADDER\n\nAdds two one-bit values.\n\n| a | b | sum | carry |\n|---|---|---|---|\n| 0 | 0 | 0 | 0 |\n| 0 | 1 | 1 | 0 |\n| 1 | 0 | 1 | 0 |\n| 1 | 1 | 0 | 1 |\n\n```logicflow\nh = HALF_ADDER(a, b)\nOUTPUT h.sum\nOUTPUT h.carry\n```\n",
+          "testText": "CIRCUIT HALF_ADDER_TEST\n  INPUT a\n  INPUT b\n  half = HALF_ADDER(a, b)\n  OUTPUT half.sum\n  OUTPUT half.carry\nEND\n\nTEST HALF_ADDER_TEST\n  CASE \"0 + 0\"\n    INPUT a = 0\n    INPUT b = 0\n    EXPECT half.sum = 0\n    EXPECT half.carry = 0\n  END\n  CASE \"0 + 1\"\n    INPUT a = 0\n    INPUT b = 1\n    EXPECT half.sum = 1\n    EXPECT half.carry = 0\n  END\n  CASE \"1 + 1\"\n    INPUT a = 1\n    INPUT b = 1\n    EXPECT half.sum = 0\n    EXPECT half.carry = 1\n  END\nEND\n"
+        },
+        {
+          "kind": "circuit",
+          "name": "FULL_ADDER",
+          "group": "Arithmetic Circuits",
+          "summary": "One-bit full adder built from two half adders and an OR gate.",
+          "source": "circuits/full-adder/circuit.lf",
+          "docs": "circuits/full-adder/docs.md",
+          "tests": "circuits/full-adder/test.lf",
+          "ports": {
+            "inputs": [
+              {
+                "name": "a",
+                "width": 1
+              },
+              {
+                "name": "b",
+                "width": 1
+              },
+              {
+                "name": "carry_in",
+                "width": 1
+              }
+            ],
+            "outputs": [
+              {
+                "name": "sum",
+                "width": 1
+              },
+              {
+                "name": "carry_out",
+                "width": 1
+              }
+            ]
+          },
+          "sourceText": "CIRCUIT FULL_ADDER\n  INPUT a\n  INPUT b\n  INPUT carry_in\n\n  first = HALF_ADDER(a, b)\n  second = HALF_ADDER(first.sum, carry_in)\n\n  sum = second.sum\n  carry_out = OR(first.carry, second.carry)\n\n  OUTPUT sum\n  OUTPUT carry_out\nEND\n",
+          "docsText": "# FULL_ADDER\n\nAdds three one-bit values: `a`, `b`, and `carry_in`.\n\n```logicflow\nf = FULL_ADDER(a, b, carry_in)\nOUTPUT f.sum\nOUTPUT f.carry_out\n```\n",
+          "testText": "CIRCUIT FULL_ADDER_TEST\n  INPUT a\n  INPUT b\n  INPUT carry_in\n  full = FULL_ADDER(a, b, carry_in)\n  OUTPUT full.sum\n  OUTPUT full.carry_out\nEND\n\nTEST FULL_ADDER_TEST\n  CASE \"0 + 0 + 0\"\n    INPUT a = 0\n    INPUT b = 0\n    INPUT carry_in = 0\n    EXPECT full.sum = 0\n    EXPECT full.carry_out = 0\n  END\n  CASE \"1 + 1 + 1\"\n    INPUT a = 1\n    INPUT b = 1\n    INPUT carry_in = 1\n    EXPECT full.sum = 1\n    EXPECT full.carry_out = 1\n  END\nEND\n"
+        }
+      ]
+    }
+  ]
+}
