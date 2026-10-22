@@ -1,0 +1,55 @@
+CIRCUIT COMPARE8_TEST
+  INPUT a : BUS(8)
+  INPUT b : BUS(8)
+
+  compared = COMPARE8(a, b)
+
+  OUTPUT compared.eq
+  OUTPUT compared.lt
+  OUTPUT compared.gt
+END
+
+TEST COMPARE8_TEST
+  CASE "equal values"
+    INPUT a = 10101010
+    INPUT b = 10101010
+    EXPECT compared.eq = 1
+    EXPECT compared.lt = 0
+    EXPECT compared.gt = 0
+  END
+  CASE "the top bit decides"
+    INPUT a = 10000000
+    INPUT b = 01111111
+    EXPECT compared.eq = 0
+    EXPECT compared.lt = 0
+    EXPECT compared.gt = 1
+  END
+  CASE "the bottom bit breaks a tie"
+    INPUT a = 10101011
+    INPUT b = 10101010
+    EXPECT compared.eq = 0
+    EXPECT compared.lt = 0
+    EXPECT compared.gt = 1
+  END
+  CASE "smaller"
+    INPUT a = 00001111
+    INPUT b = 11110000
+    EXPECT compared.eq = 0
+    EXPECT compared.lt = 1
+    EXPECT compared.gt = 0
+  END
+  CASE "the smallest pair"
+    INPUT a = 00000000
+    INPUT b = 00000000
+    EXPECT compared.eq = 1
+    EXPECT compared.lt = 0
+    EXPECT compared.gt = 0
+  END
+  CASE "the largest pair"
+    INPUT a = 11111111
+    INPUT b = 11111111
+    EXPECT compared.eq = 1
+    EXPECT compared.lt = 0
+    EXPECT compared.gt = 0
+  END
+END

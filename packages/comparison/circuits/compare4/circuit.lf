@@ -1,0 +1,18 @@
+// A four-bit comparator. The bus is split into two halves, and each half
+// is compared on its own.
+
+CIRCUIT COMPARE4
+  INPUT a : BUS(4)
+  INPUT b : BUS(4)
+
+  low = COMPARE2(a[1:0], b[1:0])
+  high = COMPARE2(a[3:2], b[3:2])
+
+  eq = AND(high.eq, low.eq)
+  lt = OR(high.lt, AND(high.eq, low.lt))
+  gt = OR(high.gt, AND(high.eq, low.gt))
+
+  OUTPUT eq
+  OUTPUT lt
+  OUTPUT gt
+END

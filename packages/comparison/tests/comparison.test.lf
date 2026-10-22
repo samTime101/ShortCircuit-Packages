@@ -1,0 +1,62 @@
+// A package-wide test that exercises every export of the package together,
+// and checks that the flags of the narrow and wide comparators agree.
+
+CIRCUIT COMPARISON_TEST
+  INPUT a : BUS(8)
+  INPUT b : BUS(8)
+
+  wide = COMPARE8(a, b)
+  low = COMPARE4(a[3:0], b[3:0])
+  high = COMPARE4(a[7:4], b[7:4])
+  single = COMPARE1(a[0], b[0])
+
+  OUTPUT wide.eq
+  OUTPUT wide.lt
+  OUTPUT wide.gt
+  OUTPUT low.eq
+  OUTPUT high.eq
+  OUTPUT single.eq
+END
+
+TEST COMPARISON_TEST
+  CASE "equal values"
+    INPUT a = 10101010
+    INPUT b = 10101010
+    EXPECT wide.eq = 1
+    EXPECT wide.lt = 0
+    EXPECT wide.gt = 0
+    EXPECT low.eq = 1
+    EXPECT high.eq = 1
+    EXPECT single.eq = 1
+  END
+  CASE "the high half is larger"
+    INPUT a = 11000000
+    INPUT b = 00111111
+    EXPECT wide.eq = 0
+    EXPECT wide.lt = 0
+    EXPECT wide.gt = 1
+    EXPECT low.eq = 0
+    EXPECT high.eq = 0
+    EXPECT single.eq = 0
+  END
+  CASE "the low half is larger"
+    INPUT a = 00111111
+    INPUT b = 11000000
+    EXPECT wide.eq = 0
+    EXPECT wide.lt = 1
+    EXPECT wide.gt = 0
+    EXPECT low.eq = 0
+    EXPECT high.eq = 0
+    EXPECT single.eq = 0
+  END
+  CASE "the halves are equal"
+    INPUT a = 11110000
+    INPUT b = 11110000
+    EXPECT wide.eq = 1
+    EXPECT wide.lt = 0
+    EXPECT wide.gt = 0
+    EXPECT low.eq = 1
+    EXPECT high.eq = 1
+    EXPECT single.eq = 1
+  END
+END

@@ -1,0 +1,16 @@
+// The leaf of the comparison family. Everything wider is built by
+// splitting a bus in half and comparing each half, so this circuit only
+// has to get one bit right.
+
+CIRCUIT COMPARE1
+  INPUT a
+  INPUT b
+
+  gt = AND(a, NOT(b))
+  lt = AND(NOT(a), b)
+  eq = NOR(gt, lt)
+
+  OUTPUT eq
+  OUTPUT lt
+  OUTPUT gt
+END

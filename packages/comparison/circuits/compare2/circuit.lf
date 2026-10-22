@@ -1,0 +1,18 @@
+// A two-bit comparator. The high bit decides on its own unless the two
+// bits are equal, and only then does the low bit get a say.
+
+CIRCUIT COMPARE2
+  INPUT a : BUS(2)
+  INPUT b : BUS(2)
+
+  low = COMPARE1(a[0], b[0])
+  high = COMPARE1(a[1], b[1])
+
+  eq = AND(high.eq, low.eq)
+  lt = OR(high.lt, AND(high.eq, low.lt))
+  gt = OR(high.gt, AND(high.eq, low.gt))
+
+  OUTPUT eq
+  OUTPUT lt
+  OUTPUT gt
+END

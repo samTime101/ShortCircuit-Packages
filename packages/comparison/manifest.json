@@ -1,0 +1,106 @@
+{
+  "schema": "shortcircuit.package/v1",
+  "name": "@shortcircuit/comparison",
+  "version": "0.1.0",
+  "engine": "^0.1.0",
+  "recommendedAutoImport": true,
+  "description": "Unsigned magnitude comparators built from the gates package.",
+  "dependencies": {
+    "@shortcircuit/gates": "^0.1.0"
+  },
+  "tests": "tests/comparison.test.lf",
+  "exports": [
+    {
+      "kind": "circuit",
+      "name": "COMPARE1",
+      "group": "Comparison Circuits",
+      "summary": "One-bit comparator. Sets exactly one of eq, lt or gt.",
+      "source": "circuits/compare1/circuit.lf",
+      "docs": "circuits/compare1/docs.md",
+      "tests": "circuits/compare1/test.lf",
+      "examples": [
+        "compared = COMPARE1(a, b)"
+      ],
+      "ports": {
+        "inputs": [
+          { "name": "a", "width": 1 },
+          { "name": "b", "width": 1 }
+        ],
+        "outputs": [
+          { "name": "eq", "width": 1 },
+          { "name": "lt", "width": 1 },
+          { "name": "gt", "width": 1 }
+        ]
+      }
+    },
+    {
+      "kind": "circuit",
+      "name": "COMPARE2",
+      "group": "Comparison Circuits",
+      "summary": "Two-bit comparator. Sets exactly one of eq, lt or gt.",
+      "source": "circuits/compare2/circuit.lf",
+      "docs": "circuits/compare2/docs.md",
+      "tests": "circuits/compare2/test.lf",
+      "examples": [
+        "compared = COMPARE2(a, b)"
+      ],
+      "ports": {
+        "inputs": [
+          { "name": "a", "width": 2 },
+          { "name": "b", "width": 2 }
+        ],
+        "outputs": [
+          { "name": "eq", "width": 1 },
+          { "name": "lt", "width": 1 },
+          { "name": "gt", "width": 1 }
+        ]
+      }
+    },
+    {
+      "kind": "circuit",
+      "name": "COMPARE4",
+      "group": "Comparison Circuits",
+      "summary": "Four-bit comparator. Sets exactly one of eq, lt or gt.",
+      "source": "circuits/compare4/circuit.lf",
+      "docs": "circuits/compare4/docs.md",
+      "tests": "circuits/compare4/test.lf",
+      "examples": [
+        "compared = COMPARE4(a, b)"
+      ],
+      "ports": {
+        "inputs": [
+          { "name": "a", "width": 4 },
+          { "name": "b", "width": 4 }
+        ],
+        "outputs": [
+          { "name": "eq", "width": 1 },
+          { "name": "lt", "width": 1 },
+          { "name": "gt", "width": 1 }
+        ]
+      }
+    },
+    {
+      "kind": "circuit",
+      "name": "COMPARE8",
+      "group": "Comparison Circuits",
+      "summary": "Eight-bit comparator. Sets exactly one of eq, lt or gt.",
+      "source": "circuits/compare8/circuit.lf",
+      "docs": "circuits/compare8/docs.md",
+      "tests": "circuits/compare8/test.lf",
+      "examples": [
+        "compared = COMPARE8(a, b)"
+      ],
+      "ports": {
+        "inputs": [
+          { "name": "a", "width": 8 },
+          { "name": "b", "width": 8 }
+        ],
+        "outputs": [
+          { "name": "eq", "width": 1 },
+          { "name": "lt", "width": 1 },
+          { "name": "gt", "width": 1 }
+        ]
+      }
+    }
+  ]
+}

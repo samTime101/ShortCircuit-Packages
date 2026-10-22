@@ -1,6 +1,6 @@
 {
   "schema": "shortcircuit.packages/v1",
-  "generatedAt": "2026-10-21T10:16:58.943Z",
+  "generatedAt": "2026-10-22T05:41:57.353Z",
   "packages": [
     {
       "schema": "shortcircuit.package/v1",
@@ -319,6 +319,185 @@
         }
       ],
       "testText": "CIRCUIT MUX_TEST\n  INPUT low : BUS(4)\n  INPUT high : BUS(4)\n  INPUT select\n\n  y = MUX(low, high, select)\n\n  OUTPUT y\nEND\n\nTEST MUX_TEST\n  CASE \"select low\"\n    INPUT low = 0011\n    INPUT high = 1100\n    INPUT select = 0\n    EXPECT y = 0011\n  END\n  CASE \"select high\"\n    INPUT low = 0011\n    INPUT high = 1100\n    INPUT select = 1\n    EXPECT y = 1100\n  END\nEND\n"
+    },
+    {
+      "schema": "shortcircuit.package/v1",
+      "name": "@shortcircuit/comparison",
+      "version": "0.1.0",
+      "engine": "^0.1.0",
+      "recommendedAutoImport": true,
+      "description": "Unsigned magnitude comparators built from the gates package.",
+      "dependencies": {
+        "@shortcircuit/gates": "^0.1.0"
+      },
+      "tests": "tests/comparison.test.lf",
+      "exports": [
+        {
+          "kind": "circuit",
+          "name": "COMPARE1",
+          "group": "Comparison Circuits",
+          "summary": "One-bit comparator. Sets exactly one of eq, lt or gt.",
+          "source": "circuits/compare1/circuit.lf",
+          "docs": "circuits/compare1/docs.md",
+          "tests": "circuits/compare1/test.lf",
+          "examples": [
+            "compared = COMPARE1(a, b)"
+          ],
+          "ports": {
+            "inputs": [
+              {
+                "name": "a",
+                "width": 1
+              },
+              {
+                "name": "b",
+                "width": 1
+              }
+            ],
+            "outputs": [
+              {
+                "name": "eq",
+                "width": 1
+              },
+              {
+                "name": "lt",
+                "width": 1
+              },
+              {
+                "name": "gt",
+                "width": 1
+              }
+            ]
+          },
+          "sourceText": "// The leaf of the comparison family. Everything wider is built by\n// splitting a bus in half and comparing each half, so this circuit only\n// has to get one bit right.\n\nCIRCUIT COMPARE1\n  INPUT a\n  INPUT b\n\n  gt = AND(a, NOT(b))\n  lt = AND(NOT(a), b)\n  eq = NOR(gt, lt)\n\n  OUTPUT eq\n  OUTPUT lt\n  OUTPUT gt\nEND\n",
+          "docsText": "# COMPARE1\n\n`COMPARE1` compares two one-bit values.\n\n- `a`, `b`: one-bit operands.\n- `eq`: one when `a` and `b` are the same.\n- `lt`: one when `a` is less than `b`.\n- `gt`: one when `a` is greater than `b`.\n\nExactly one of `eq`, `lt` and `gt` is high.\n\n```logicflow\ncompared = COMPARE1(a, b)\nOUTPUT compared.eq\n```\n\nThis is the leaf of the comparison family. `COMPARE2`, `COMPARE4` and\n`COMPARE8` split a bus in half and compare each half, so a wider comparison\nis a few lines rather than a new circuit from scratch.\n",
+          "testText": "CIRCUIT COMPARE1_TEST\n  INPUT a\n  INPUT b\n\n  compared = COMPARE1(a, b)\n\n  OUTPUT compared.eq\n  OUTPUT compared.lt\n  OUTPUT compared.gt\nEND\n\nTEST COMPARE1_TEST\n  CASE \"zero equals zero\"\n    INPUT a = 0\n    INPUT b = 0\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\n  CASE \"one equals one\"\n    INPUT a = 1\n    INPUT b = 1\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\n  CASE \"zero is less than one\"\n    INPUT a = 0\n    INPUT b = 1\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 1\n    EXPECT compared.gt = 0\n  END\n  CASE \"one is greater than zero\"\n    INPUT a = 1\n    INPUT b = 0\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 1\n  END\nEND\n"
+        },
+        {
+          "kind": "circuit",
+          "name": "COMPARE2",
+          "group": "Comparison Circuits",
+          "summary": "Two-bit comparator. Sets exactly one of eq, lt or gt.",
+          "source": "circuits/compare2/circuit.lf",
+          "docs": "circuits/compare2/docs.md",
+          "tests": "circuits/compare2/test.lf",
+          "examples": [
+            "compared = COMPARE2(a, b)"
+          ],
+          "ports": {
+            "inputs": [
+              {
+                "name": "a",
+                "width": 2
+              },
+              {
+                "name": "b",
+                "width": 2
+              }
+            ],
+            "outputs": [
+              {
+                "name": "eq",
+                "width": 1
+              },
+              {
+                "name": "lt",
+                "width": 1
+              },
+              {
+                "name": "gt",
+                "width": 1
+              }
+            ]
+          },
+          "sourceText": "// A two-bit comparator. The high bit decides on its own unless the two\n// bits are equal, and only then does the low bit get a say.\n\nCIRCUIT COMPARE2\n  INPUT a : BUS(2)\n  INPUT b : BUS(2)\n\n  low = COMPARE1(a[0], b[0])\n  high = COMPARE1(a[1], b[1])\n\n  eq = AND(high.eq, low.eq)\n  lt = OR(high.lt, AND(high.eq, low.lt))\n  gt = OR(high.gt, AND(high.eq, low.gt))\n\n  OUTPUT eq\n  OUTPUT lt\n  OUTPUT gt\nEND\n",
+          "docsText": "# COMPARE2\n\n`COMPARE2` compares two two-bit values.\n\n- `a`, `b`: two-bit operands.\n- `eq`: one when `a` and `b` are the same.\n- `lt`: one when `a` is less than `b`.\n- `gt`: one when `a` is greater than `b`.\n\nExactly one of `eq`, `lt` and `gt` is high.\n\n```logicflow\ncompared = COMPARE2(a, b)\nOUTPUT compared.eq\n```\n\nThe high bit decides on its own unless the two high bits are equal, and only\nthen does the low bit get a say.\n",
+          "testText": "CIRCUIT COMPARE2_TEST\n  INPUT a : BUS(2)\n  INPUT b : BUS(2)\n\n  compared = COMPARE2(a, b)\n\n  OUTPUT compared.eq\n  OUTPUT compared.lt\n  OUTPUT compared.gt\nEND\n\nTEST COMPARE2_TEST\n  CASE \"equal values\"\n    INPUT a = 10\n    INPUT b = 10\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\n  CASE \"the high bit decides\"\n    INPUT a = 10\n    INPUT b = 01\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 1\n  END\n  CASE \"the low bit breaks a tie\"\n    INPUT a = 01\n    INPUT b = 00\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 1\n  END\n  CASE \"smaller\"\n    INPUT a = 01\n    INPUT b = 10\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 1\n    EXPECT compared.gt = 0\n  END\n  CASE \"the smallest pair\"\n    INPUT a = 00\n    INPUT b = 00\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\n  CASE \"the largest pair\"\n    INPUT a = 11\n    INPUT b = 11\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\nEND\n"
+        },
+        {
+          "kind": "circuit",
+          "name": "COMPARE4",
+          "group": "Comparison Circuits",
+          "summary": "Four-bit comparator. Sets exactly one of eq, lt or gt.",
+          "source": "circuits/compare4/circuit.lf",
+          "docs": "circuits/compare4/docs.md",
+          "tests": "circuits/compare4/test.lf",
+          "examples": [
+            "compared = COMPARE4(a, b)"
+          ],
+          "ports": {
+            "inputs": [
+              {
+                "name": "a",
+                "width": 4
+              },
+              {
+                "name": "b",
+                "width": 4
+              }
+            ],
+            "outputs": [
+              {
+                "name": "eq",
+                "width": 1
+              },
+              {
+                "name": "lt",
+                "width": 1
+              },
+              {
+                "name": "gt",
+                "width": 1
+              }
+            ]
+          },
+          "sourceText": "// A four-bit comparator. The bus is split into two halves, and each half\n// is compared on its own.\n\nCIRCUIT COMPARE4\n  INPUT a : BUS(4)\n  INPUT b : BUS(4)\n\n  low = COMPARE2(a[1:0], b[1:0])\n  high = COMPARE2(a[3:2], b[3:2])\n\n  eq = AND(high.eq, low.eq)\n  lt = OR(high.lt, AND(high.eq, low.lt))\n  gt = OR(high.gt, AND(high.eq, low.gt))\n\n  OUTPUT eq\n  OUTPUT lt\n  OUTPUT gt\nEND\n",
+          "docsText": "# COMPARE4\n\n`COMPARE4` compares two four-bit values.\n\n- `a`, `b`: four-bit operands.\n- `eq`: one when `a` and `b` are the same.\n- `lt`: one when `a` is less than `b`.\n- `gt`: one when `a` is greater than `b`.\n\nExactly one of `eq`, `lt` and `gt` is high.\n\n```logicflow\ncompared = COMPARE4(a, b)\nOUTPUT compared.eq\n```\n\nThe bus is split into two halves, and each half is compared on its own. The\nhigh half decides unless the two high halves are equal.\n",
+          "testText": "CIRCUIT COMPARE4_TEST\n  INPUT a : BUS(4)\n  INPUT b : BUS(4)\n\n  compared = COMPARE4(a, b)\n\n  OUTPUT compared.eq\n  OUTPUT compared.lt\n  OUTPUT compared.gt\nEND\n\nTEST COMPARE4_TEST\n  CASE \"equal values\"\n    INPUT a = 0101\n    INPUT b = 0101\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\n  CASE \"the top bit decides\"\n    INPUT a = 1000\n    INPUT b = 0111\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 1\n  END\n  CASE \"the bottom bit breaks a tie\"\n    INPUT a = 0101\n    INPUT b = 0100\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 1\n  END\n  CASE \"smaller\"\n    INPUT a = 0011\n    INPUT b = 1010\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 1\n    EXPECT compared.gt = 0\n  END\n  CASE \"the smallest pair\"\n    INPUT a = 0000\n    INPUT b = 0000\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\n  CASE \"the largest pair\"\n    INPUT a = 1111\n    INPUT b = 1111\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\nEND\n"
+        },
+        {
+          "kind": "circuit",
+          "name": "COMPARE8",
+          "group": "Comparison Circuits",
+          "summary": "Eight-bit comparator. Sets exactly one of eq, lt or gt.",
+          "source": "circuits/compare8/circuit.lf",
+          "docs": "circuits/compare8/docs.md",
+          "tests": "circuits/compare8/test.lf",
+          "examples": [
+            "compared = COMPARE8(a, b)"
+          ],
+          "ports": {
+            "inputs": [
+              {
+                "name": "a",
+                "width": 8
+              },
+              {
+                "name": "b",
+                "width": 8
+              }
+            ],
+            "outputs": [
+              {
+                "name": "eq",
+                "width": 1
+              },
+              {
+                "name": "lt",
+                "width": 1
+              },
+              {
+                "name": "gt",
+                "width": 1
+              }
+            ]
+          },
+          "sourceText": "// An eight-bit comparator. The bus is split into two halves, and each half\n// is compared on its own.\n\nCIRCUIT COMPARE8\n  INPUT a : BUS(8)\n  INPUT b : BUS(8)\n\n  low = COMPARE4(a[3:0], b[3:0])\n  high = COMPARE4(a[7:4], b[7:4])\n\n  eq = AND(high.eq, low.eq)\n  lt = OR(high.lt, AND(high.eq, low.lt))\n  gt = OR(high.gt, AND(high.eq, low.gt))\n\n  OUTPUT eq\n  OUTPUT lt\n  OUTPUT gt\nEND\n",
+          "docsText": "# COMPARE8\n\n`COMPARE8` compares two eight-bit values.\n\n- `a`, `b`: eight-bit operands.\n- `eq`: one when `a` and `b` are the same.\n- `lt`: one when `a` is less than `b`.\n- `gt`: one when `a` is greater than `b`.\n\nExactly one of `eq`, `lt` and `gt` is high.\n\n```logicflow\ncompared = COMPARE8(a, b)\nOUTPUT compared.eq\n```\n\nThe bus is split into two halves, and each half is compared on its own. The\nhigh half decides unless the two high halves are equal.\n",
+          "testText": "CIRCUIT COMPARE8_TEST\n  INPUT a : BUS(8)\n  INPUT b : BUS(8)\n\n  compared = COMPARE8(a, b)\n\n  OUTPUT compared.eq\n  OUTPUT compared.lt\n  OUTPUT compared.gt\nEND\n\nTEST COMPARE8_TEST\n  CASE \"equal values\"\n    INPUT a = 10101010\n    INPUT b = 10101010\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\n  CASE \"the top bit decides\"\n    INPUT a = 10000000\n    INPUT b = 01111111\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 1\n  END\n  CASE \"the bottom bit breaks a tie\"\n    INPUT a = 10101011\n    INPUT b = 10101010\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 1\n  END\n  CASE \"smaller\"\n    INPUT a = 00001111\n    INPUT b = 11110000\n    EXPECT compared.eq = 0\n    EXPECT compared.lt = 1\n    EXPECT compared.gt = 0\n  END\n  CASE \"the smallest pair\"\n    INPUT a = 00000000\n    INPUT b = 00000000\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\n  CASE \"the largest pair\"\n    INPUT a = 11111111\n    INPUT b = 11111111\n    EXPECT compared.eq = 1\n    EXPECT compared.lt = 0\n    EXPECT compared.gt = 0\n  END\nEND\n"
+        }
+      ],
+      "testText": "// A package-wide test that exercises every export of the package together,\n// and checks that the flags of the narrow and wide comparators agree.\n\nCIRCUIT COMPARISON_TEST\n  INPUT a : BUS(8)\n  INPUT b : BUS(8)\n\n  wide = COMPARE8(a, b)\n  low = COMPARE4(a[3:0], b[3:0])\n  high = COMPARE4(a[7:4], b[7:4])\n  single = COMPARE1(a[0], b[0])\n\n  OUTPUT wide.eq\n  OUTPUT wide.lt\n  OUTPUT wide.gt\n  OUTPUT low.eq\n  OUTPUT high.eq\n  OUTPUT single.eq\nEND\n\nTEST COMPARISON_TEST\n  CASE \"equal values\"\n    INPUT a = 10101010\n    INPUT b = 10101010\n    EXPECT wide.eq = 1\n    EXPECT wide.lt = 0\n    EXPECT wide.gt = 0\n    EXPECT low.eq = 1\n    EXPECT high.eq = 1\n    EXPECT single.eq = 1\n  END\n  CASE \"the high half is larger\"\n    INPUT a = 11000000\n    INPUT b = 00111111\n    EXPECT wide.eq = 0\n    EXPECT wide.lt = 0\n    EXPECT wide.gt = 1\n    EXPECT low.eq = 0\n    EXPECT high.eq = 0\n    EXPECT single.eq = 0\n  END\n  CASE \"the low half is larger\"\n    INPUT a = 00111111\n    INPUT b = 11000000\n    EXPECT wide.eq = 0\n    EXPECT wide.lt = 1\n    EXPECT wide.gt = 0\n    EXPECT low.eq = 0\n    EXPECT high.eq = 0\n    EXPECT single.eq = 0\n  END\n  CASE \"the halves are equal\"\n    INPUT a = 11110000\n    INPUT b = 11110000\n    EXPECT wide.eq = 1\n    EXPECT wide.lt = 0\n    EXPECT wide.gt = 0\n    EXPECT low.eq = 1\n    EXPECT high.eq = 1\n    EXPECT single.eq = 1\n  END\nEND\n"
     }
   ]
 }

@@ -1,0 +1,9 @@
+{
+  "name": "@shortcircuit/comparison",
+  "version": "0.1.0",
+  "description": "Unsigned magnitude comparators for Short Circuit.",
+  "license": "MIT",
+  "dependencies": {
+    "@shortcircuit/gates": "^0.1.0"
+  }
+}

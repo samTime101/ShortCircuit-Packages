@@ -1,0 +1,41 @@
+CIRCUIT COMPARE1_TEST
+  INPUT a
+  INPUT b
+
+  compared = COMPARE1(a, b)
+
+  OUTPUT compared.eq
+  OUTPUT compared.lt
+  OUTPUT compared.gt
+END
+
+TEST COMPARE1_TEST
+  CASE "zero equals zero"
+    INPUT a = 0
+    INPUT b = 0
+    EXPECT compared.eq = 1
+    EXPECT compared.lt = 0
+    EXPECT compared.gt = 0
+  END
+  CASE "one equals one"
+    INPUT a = 1
+    INPUT b = 1
+    EXPECT compared.eq = 1
+    EXPECT compared.lt = 0
+    EXPECT compared.gt = 0
+  END
+  CASE "zero is less than one"
+    INPUT a = 0
+    INPUT b = 1
+    EXPECT compared.eq = 0
+    EXPECT compared.lt = 1
+    EXPECT compared.gt = 0
+  END
+  CASE "one is greater than zero"
+    INPUT a = 1
+    INPUT b = 0
+    EXPECT compared.eq = 0
+    EXPECT compared.lt = 0
+    EXPECT compared.gt = 1
+  END
+END
