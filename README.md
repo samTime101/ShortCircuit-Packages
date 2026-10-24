@@ -1,202 +1,99 @@
 # Short Circuit Packages
 
-The package registry for **Short Circuit** and the **LogicFlow** language.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/samTime101/ShortCircuit/blob/main/LICENSE)
 
-Short Circuit keeps only a tiny kernel:
+> **The official package registry for Short Circuit and the LogicFlow language.**
 
-- `NAND`
-- constants, wires, ports and buses
-- structural wiring (`CONCAT`, `SLICE`, `BROADCAST`, ...)
-- `CIRCUIT` composition
-- `STATE` and clock edges
+Short Circuit keeps a minimal kernel: `NAND`, constants, wires, ports, buses, structural wiring (`CONCAT`, `SLICE`, `BROADCAST`, ...), `CIRCUIT` composition, and `STATE`/clock edges.
 
-Everything that can be built from those fundamentals belongs here.
+**Everything else lives here** — gates, arithmetic, selection, comparison, and community packages — all built from those fundamentals as real `.lf` source files.
 
-## Packages
+---
 
-| Package | Provides |
-|---|---|
-| `@shortcircuit/gates` | `NOT`, `AND`, `OR`, `BUFFER`, `NOR`, `XOR`, `XNOR` |
-| `@shortcircuit/arithmetic` | `HALF_ADDER`, `FULL_ADDER`, `ADD4`, `ADD8` |
-| `@shortcircuit/selection` | `MUX` |
+## Available Packages
 
-The `gates` package uses value macros. Each macro is a real `.lf` source file:
+| Package | Exports | Description |
+|---------|---------|-------------|
+| `@shortcircuit/gates` | `NOT`, `AND`, `OR`, `BUFFER`, `NOR`, `XOR`, `XNOR` | Core logic macros (NAND-derived) |
+| `@shortcircuit/arithmetic` | `HALF_ADDER`, `FULL_ADDER`, `ADD4`, `ADD8` | Combinational adder circuits |
+| `@shortcircuit/selection` | `MUX` | Multiplexer macro |
 
-```logicflow
-MACRO AND(a, b, ...)
-  BODY NOT(NAND(a, b, ...))
-END
+> **Note**: The web studio bundles these by default. The CLI requires explicit `shortcircuit package install` before use.
+
+---
+
+## Package Format
+
+See [SPEC.md](SPEC.md) for the full specification and [`schemas/`](schemas/) for JSON Schemas.
+
+### Structure
+
+```
+packages/<name>/
+├─ package.json        # Node metadata (name, version, deps)
+├─ manifest.json       # Catalog metadata + source pointers
+├─ macros/
+│  └─ <name>/
+│     └─ macro.lf      # Macro implementation (value macros)
+├─ circuits/
+│  └─ <name>/
+│     └─ circuit.lf    # Circuit implementation (composite circuits)
+├─ docs/
+│  └─ <name>.md        # Per-export documentation
+└─ tests/
+   └─ <name>.test.lf   # Package test suite
 ```
 
-The `arithmetic` package uses ordinary `.lf` circuits.
+### Key Principles
 
-## Format
+- **Source-first**: Implementations live in `.lf` files. The manifest contains only catalog metadata and source pointers — **never** macro bodies or circuit bodies.
+- **Self-contained**: Each package owns its docs, examples, and tests.
+- **Validated builds**: `scripts/build.mjs` validates manifests against schemas, checks that exports match source declarations, and verifies docs/tests exist.
 
-See [SPEC.md](SPEC.md) for the package format and [`schemas/`](schemas/) for the
-JSON Schemas. `scripts/build.mjs` validates the manifest before it writes the
-bundled snapshot.
-
-The short version:
-
-- `package.json` is Node metadata.
-- `manifest.json` is catalog metadata and source pointers.
-- `macros/<name>/macro.lf` contains macro implementations.
-- `circuits/<name>/circuit.lf` contains composite circuits.
-- `docs/` and `tests/` are package-owned.
-- Macro bodies are never stored in the manifest.
+---
 
 ## Registry
 
-`registry.json` points at each package manifest. `dist/packages.json` is the
-bundled snapshot the app can load offline. It is generated from the manifests,
-macro sources, circuit sources, docs, and tests.
+- `registry.json` — Index of packages (name, version, manifest path)
+- `dist/packages.json` — Bundled snapshot for offline loading (generated from manifests + sources + docs + tests)
 
 ```bash
+# Build the bundled snapshot
 node scripts/build.mjs
+# → Wrote dist/packages.json (3 packages)
 ```
 
-## Package layout
-
-```text
-packages/
-  gates/
-    package.json
-    manifest.json
-    macros/
-      and/macro.lf
-      not/macro.lf
-      or/macro.lf
-      ...
-    docs/
-    tests/
-  arithmetic/
-    package.json
-    manifest.json
-    circuits/
-      half-adder/circuit.lf
-      full-adder/circuit.lf
-      add4/circuit.lf
-      add8/circuit.lf
-  selection/
-    package.json
-    manifest.json
-    macros/
-      mux/macro.lf
-    tests/
-```
-
-Every package owns its docs, examples and tests. The app reads the manifest for
-editor completion and hover metadata; it parses the `.lf` sources for
-implementation.
+The web studio loads `dist/packages.json`. The CLI resolves packages from the registry at install time.
 
 ---
 
-## Creating a Short Circuit package
+## Quick Start: Create a Package
 
-This guide creates a real package from scratch, builds the bundled snapshot,
-runs its tests, and uses it from a circuit.
-
-The example package is `@acme/parity`. It exports one macro, `PARITY3(a, b, c)`,
-and depends on the bundled `@shortcircuit/gates` package.
-
-> Packages are source-first. Implementations live in `.lf` files. The manifest
-> contains catalog metadata and source pointers only; it never contains a macro
-> body or circuit body.
-
----
-
-### 1. One-time setup
-
-Clone the main repository with its package submodule:
+### Prerequisites
 
 ```bash
+# Clone main repo with package submodule
 git clone --recurse-submodules https://github.com/samTime101/ShortCircuit.git
 cd ShortCircuit
 npm ci
-```
 
-If the repository is already cloned, initialize the submodule once:
-
-```bash
-git submodule update --init --recursive
-```
-
-The package repository lives at:
-
-```text
-vendor/ShortCircuit-Packages/
-```
-
-Check that the bundle builds before making changes:
-
-```bash
+# Verify bundle builds
 cd vendor/ShortCircuit-Packages
 node scripts/build.mjs
 ```
 
-You should see:
-
-```text
-Wrote dist/packages.json (3 packages)
-```
-
----
-
-### Quick start: scaffold with the CLI
-
-The registry ships an interactive authoring CLI. Run it from the main
-repository root:
+### Option A: Scaffold with CLI (Recommended)
 
 ```bash
+# From main repo root
 npm run package:init
-```
 
-Or run it from the package repository:
-
-```bash
+# Or from package repo
 cd vendor/ShortCircuit-Packages
 npm run package:init
 ```
 
-With no flags, it asks for each value:
-
-```text
-What is the name of the package? (e.g. @acme/parity): @acme/parity
-Public export name (PARITY): PARITY3
-Export kind (macro or circuit) (macro):
-Description (A Short Circuit package.): Three-input parity built from NAND.
-Version (0.1.0):
-License (MIT):
-Dependencies (comma-separated, blank for none): @shortcircuit/gates
-Auto-import without an IMPORT? (y/N): y
-```
-
-Press Enter to accept the value in brackets. Package names are scoped npm
-names such as `@acme/parity`. The command creates `package.json`,
-`manifest.json`, a `.lf` source file, docs, and a package test. It also adds the
-package to `registry.json` unless `--no-registry` is used.
-
-The generated source is a NAND scaffold. Replace it with the real
-implementation, then build and test:
-
-```bash
-npm run package:build   # validate manifests and rebuild dist/packages.json
-npm run package:test    # build, then run the package tests
-npm run package:check   # build and test in one command
-npm run package:list    # show registered packages and export counts
-```
-
-`package:test` runs `npm run test:packages` in the main repository. If the
-package repository is checked out outside the main repository, point it at the
-main checkout:
-
-```bash
-SHORTCIRCUIT_ROOT=/path/to/ShortCircuit npm run package:test
-```
-
-#### Non-interactive init
-
-For scripts and automation, pass the fields directly:
+Interactive prompts (or pass flags for non-interactive):
 
 ```bash
 npm run package:init -- \
@@ -205,39 +102,29 @@ npm run package:init -- \
   --kind macro \
   --description "Three-input parity built from NAND." \
   --dependencies @shortcircuit/gates \
-  --auto-import
+  --auto-import \
+  --yes
 ```
 
-| Flag | Meaning |
-| --- | --- |
-| `--name <@scope/name>` | Scoped package name. Required when not prompted. |
-| `--export <NAME>` | Public macro or circuit name. Defaults to the upper-case directory name. |
-| `--kind <macro\|circuit>` | Export kind. Default: `macro`. |
-| `--description <text>` | Catalog description. |
-| `--version <semver>` | Package version. Default: `0.1.0`. |
-| `--license <id>` | License identifier. Default: `MIT`. |
-| `--dependencies <list>` | Comma-separated package names. |
-| `--auto-import` | Set `recommendedAutoImport` to `true`. |
-| `--no-registry` | Do not edit `registry.json`. |
-| `--force` | Replace an existing package directory and registry entry. |
-| `--yes` | Accept defaults and never prompt. `--name` is still required. |
+| Flag | Description |
+|------|-------------|
+| `--name <@scope/name>` | Scoped package name (required) |
+| `--export <NAME>` | Public export name (default: upper-case dir name) |
+| `--kind <macro\|circuit>` | Export kind (default: `macro`) |
+| `--description <text>` | Catalog description |
+| `--version <semver>` | Package version (default: `0.1.0`) |
+| `--license <id>` | License identifier (default: `MIT`) |
+| `--dependencies <list>` | Comma-separated package names |
+| `--auto-import` | Set `recommendedAutoImport: true` |
+| `--no-registry` | Don't edit `registry.json` |
+| `--force` | Replace existing package dir/entry |
+| `--yes` | Accept defaults, never prompt |
 
-When stdin is not a TTY, init behaves like `--yes`: it uses defaults for fields
-that were not passed and requires `--name`.
+### Option B: Manual Creation
 
-The numbered steps below show exactly what the CLI generates, which is useful
-when you want to understand or hand-edit every file.
+The CLI generates exactly these files — useful for understanding or hand-editing:
 
----
-
-### 2. Create the package directory
-
-> **Using the CLI?** Skip steps 2–8. `npm run package:init` creates the package
-> directory, `package.json`, `manifest.json`, `.lf` source, docs, tests, and the
-> registry entry for you. The manual steps below show exactly what it generates,
-> or how to build a package by hand.
-
-From the package repository root (`vendor/ShortCircuit-Packages`):
+#### 1. Directory Layout
 
 ```bash
 mkdir -p packages/parity/macros/parity3
@@ -245,31 +132,20 @@ mkdir -p packages/parity/docs
 mkdir -p packages/parity/tests
 ```
 
-The layout is:
-
-```text
+```
 packages/parity/
-  package.json
-  manifest.json
-  macros/
-    parity3/
-      macro.lf
-  docs/
-    parity3.md
-  tests/
-    parity.test.lf
+├─ package.json
+├─ manifest.json
+├─ macros/
+│  └─ parity3/
+│     └─ macro.lf
+├─ docs/
+│  └─ parity3.md
+└─ tests/
+   └─ parity.test.lf
 ```
 
-A package can also contain ordinary circuits under `circuits/<name>/`.
-
----
-
-### 3. Create `package.json`
-
-`package.json` is Node package metadata. Its `name` and `version` must match
-`manifest.json`; the build script checks this.
-
-Create `packages/parity/package.json`:
+#### 2. `package.json`
 
 ```json
 {
@@ -283,14 +159,7 @@ Create `packages/parity/package.json`:
 }
 ```
 
-If your package uses another package's exports, declare that dependency in both
-`package.json` and `manifest.json`.
-
----
-
-### 4. Create the macro source
-
-Create `packages/parity/macros/parity3/macro.lf`:
+#### 3. Macro Source: `macros/parity3/macro.lf`
 
 ```logicflow
 MACRO PARITY3(a, b, c)
@@ -298,18 +167,9 @@ MACRO PARITY3(a, b, c)
 END
 ```
 
-`XOR` is provided by `@shortcircuit/gates`. A package macro can use the kernel
-`NAND` operation, structural operations, and exports from packages it depends
-on.
+`XOR` comes from `@shortcircuit/gates` (declared in dependencies).
 
-The macro source is the implementation. Do not copy the body into the
-manifest.
-
----
-
-### 5. Create the manifest
-
-Create `packages/parity/manifest.json`:
+#### 4. Manifest: `manifest.json`
 
 ```json
 {
@@ -331,38 +191,43 @@ Create `packages/parity/manifest.json`:
       "group": "Parity",
       "summary": "One when an odd number of inputs are high.",
       "docs": "docs/parity3.md",
-      "examples": [
-        "y = PARITY3(a, b, c)"
-      ],
+      "examples": ["y = PARITY3(a, b, c)"],
       "widthRule": "Result width = common input width"
     }
   ]
 }
 ```
 
-Important fields:
+**Manifest Fields:**
 
-| Field | Meaning |
-| --- | --- |
-| `name`, `version` | Must match `package.json`. |
-| `engine` | Compatible engine version. |
-| `recommendedAutoImport` | `true` makes the package available without an explicit `IMPORT` in the bundled app. |
-| `dependencies` | Package names whose exports this package may use. |
-| `tests` | Package-wide tests. Per-circuit tests can also use an export's `tests` field. |
-| `exports` | Public macros and circuits. Each entry points at a real source file. |
-| `internal` | Optional; hides an export from docs and completions while keeping it usable by other package sources. |
-| `ports` | Optional catalog metadata for circuit exports. The compiler still reads the real ports from the circuit source. |
+| Field | Required | Description |
+|-------|----------|-------------|
+| `schema` | Yes | Always `"shortcircuit.package/v1"` |
+| `name`, `version` | Yes | Must match `package.json` |
+| `engine` | Yes | Compatible engine version range |
+| `recommendedAutoImport` | No | `true` = available without explicit `IMPORT` in studio |
+| `dependencies` | No | Package names whose exports this package uses |
+| `tests` | No | Package-wide test file path |
+| `exports[]` | Yes | Public macros/circuits (see below) |
+| `internal[]` | No | Hidden exports (usable by package sources only) |
 
-For a circuit export, use `"kind": "circuit"` and point `source` at a normal
-`.lf` file containing `CIRCUIT <name>`.
+**Export Entry Fields:**
 
----
+| Field | Required | Description |
+|-------|----------|-------------|
+| `kind` | Yes | `"macro"` or `"circuit"` |
+| `name` | Yes | Public export name (must match source declaration) |
+| `source` | Yes | Path to `.lf` file |
+| `group` | No | Category for docs/completions |
+| `summary` | No | One-line description |
+| `docs` | No | Path to markdown doc |
+| `examples[]` | No | Usage snippets for hover/completions |
+| `widthRule` | No | Human-readable width behavior |
+| `ports` | Circuit only | Catalog metadata for ports (compiler reads real ports from source) |
 
-### 6. Add docs
+#### 5. Documentation: `docs/parity3.md`
 
-Create `packages/parity/docs/parity3.md`:
-
-````markdown
+```markdown
 # PARITY3
 
 `PARITY3(a, b, c)` returns one when an odd number of its three inputs are high.
@@ -373,15 +238,9 @@ Create `packages/parity/docs/parity3.md`:
 ```logicflow
 y = PARITY3(a, b, c)
 ```
-````
+```
 
-Package docs are embedded into the bundled snapshot and can be shown by a host.
-
----
-
-### 7. Add package tests
-
-Create `packages/parity/tests/parity.test.lf`:
+#### 6. Tests: `tests/parity.test.lf`
 
 ```logicflow
 CIRCUIT PARITY3_TEST
@@ -425,128 +284,54 @@ TEST PARITY3_TEST
 END
 ```
 
-The test wrapper circuit is test-only. It must not redefine a public export.
-Package tests run through the same compiler and simulator as user tests.
+The test wrapper circuit is test-only — must not redefine a public export.
 
----
-
-### 8. Register the package
-
-Add the package to `vendor/ShortCircuit-Packages/registry.json`:
-
-```json
-{
-  "name": "@acme/parity",
-  "version": "0.1.0",
-  "manifest": "packages/parity/manifest.json"
-}
-```
-
-The full file should now look like:
+#### 7. Register in `registry.json`
 
 ```json
 {
   "schema": "shortcircuit.registry/v1",
   "packages": [
-    {
-      "name": "@shortcircuit/gates",
-      "version": "0.1.0",
-      "manifest": "packages/gates/manifest.json"
-    },
-    {
-      "name": "@shortcircuit/arithmetic",
-      "version": "0.1.0",
-      "manifest": "packages/arithmetic/manifest.json"
-    },
-    {
-      "name": "@shortcircuit/selection",
-      "version": "0.1.0",
-      "manifest": "packages/selection/manifest.json"
-    },
-    {
-      "name": "@acme/parity",
-      "version": "0.1.0",
-      "manifest": "packages/parity/manifest.json"
-    }
+    { "name": "@shortcircuit/gates", "version": "0.1.0", "manifest": "packages/gates/manifest.json" },
+    { "name": "@shortcircuit/arithmetic", "version": "0.1.0", "manifest": "packages/arithmetic/manifest.json" },
+    { "name": "@shortcircuit/selection", "version": "0.1.0", "manifest": "packages/selection/manifest.json" },
+    { "name": "@acme/parity", "version": "0.1.0", "manifest": "packages/parity/manifest.json" }
   ]
 }
 ```
 
-The registry is static. Packages are not discovered by scanning directories or
-calling GitHub.
+The registry is static — packages are not discovered by scanning directories.
 
 ---
 
-### 9. Build and validate the bundle
-
-From `vendor/ShortCircuit-Packages`:
+## Build & Test
 
 ```bash
-npm run package:build
+# From vendor/ShortCircuit-Packages
+npm run package:build   # Validate + rebuild dist/packages.json
+npm run package:test    # Build + run all package tests
+npm run package:check   # Build + test in one command
+npm run package:list    # Show registered packages and export counts
 ```
 
-This runs `node scripts/build.mjs`. Expected output:
-
-```text
-Wrote dist/packages.json (4 packages)
-```
-
-The build script checks that:
-
-- every manifest uses `shortcircuit.package/v1`;
-- `package.json` and `manifest.json` names and versions agree;
-- every export points at an existing source file;
-- the source really declares the exported `MACRO` or `CIRCUIT`;
-- macro manifests do not contain implementation fields such as `body`, `args`,
-  `fold`, or `variadic`;
-- docs and tests referenced by the manifest exist.
-
-Do not edit `dist/packages.json` by hand. It is generated.
-
----
-
-### 10. Run the package tests
-
-From `vendor/ShortCircuit-Packages`:
+`package:test` runs `npm run test:packages` in the main repo. If the package repo is outside the main checkout:
 
 ```bash
-npm run package:test
+SHORTCIRCUIT_ROOT=/path/to/ShortCircuit npm run package:test
 ```
 
-This rebuilds the bundle, then runs `npm run test:packages` in the main
-repository. You can also run the test directly from the main repository:
+Or run directly from main repo:
 
 ```bash
 cd ../..
 npx vitest run packages/engine/test/packages.test.ts
 ```
 
-That test calls `runPackageTests()` against the bundled snapshot, so the new
-package and all existing package tests run together.
-
-To run the whole project:
-
-```bash
-npm test
-npm run typecheck
-npm run build
-```
-
-You can also run package tests directly from the engine API:
-
-```ts
-import { runPackageTests } from "@shortcircuit/engine";
-
-const report = runPackageTests();
-console.log(report.ok, report.passed, report.failed);
-```
-
 ---
 
-### 11. Use the package in a circuit
+## Using a Package in a Circuit
 
-Because this example sets `recommendedAutoImport: true`, the export is available
-without an import:
+If `recommendedAutoImport: true` (set via `--auto-import`):
 
 ```logicflow
 CIRCUIT Odd
@@ -560,7 +345,7 @@ CIRCUIT Odd
 END
 ```
 
-An explicit import is also valid. Use an alias for qualified access:
+Explicit import (always valid):
 
 ```logicflow
 IMPORT "@acme/parity" AS parity
@@ -576,16 +361,13 @@ CIRCUIT Odd
 END
 ```
 
-If `recommendedAutoImport` is `false`, the explicit import is required.
-
-Missing or disabled packages report `E602`. Reusing an alias for two packages
-reports `E603`.
+If `recommendedAutoImport: false`, explicit import is required.
 
 ---
 
-### 12. Commit the package and submodule pointer
+## Committing & Publishing
 
-Commit the package repository first:
+### 1. Commit Package Repo
 
 ```bash
 git -C vendor/ShortCircuit-Packages add -A
@@ -593,7 +375,7 @@ git -C vendor/ShortCircuit-Packages commit -m "feat: add parity package"
 git -C vendor/ShortCircuit-Packages push origin main
 ```
 
-Then commit the updated submodule pointer in the main repository:
+### 2. Update Submodule Pointer in Main Repo
 
 ```bash
 git add vendor/ShortCircuit-Packages
@@ -601,15 +383,13 @@ git commit -m "chore: update package submodule"
 git push origin main
 ```
 
-The main repository must point at the package commit that contains the built
-`dist/packages.json`; otherwise CI and Vercel cannot compile the engine.
+**Important**: The main repo must point at the package commit containing the built `dist/packages.json`; otherwise CI and deployments fail.
 
 ---
 
-### 13. Using a custom package outside the registry
+## Using Custom Packages Outside the Registry
 
-The studio package manager lists packages from the bundled snapshot. A host can
-load a different bundle through the compiler API:
+Hosts can load a different bundle via the compiler API:
 
 ```ts
 import { compile, type PackageBundle } from "@shortcircuit/engine";
@@ -617,82 +397,59 @@ import { compile, type PackageBundle } from "@shortcircuit/engine";
 const bundle: PackageBundle = {
   schema: "shortcircuit.packages/v1",
   packages: [
-    // Manifests with sourceText/docsText/testText embedded, like dist/packages.json.
+    // Manifests with embedded sourceText/docsText/testText (like dist/packages.json)
   ],
 };
 
 const result = compile(source, {
   packages: bundle,
-  disableDefaultPackages: false,
+  disableDefaultPackages: false,  // true = only supplied bundle
 });
 ```
 
-Use `disableDefaultPackages: true` when you want only the supplied bundle.
-`packages` accepts either a full `PackageBundle` or an array of manifests.
+`packages` accepts a full `PackageBundle` or an array of manifests.
 
 ---
 
-### 14. Troubleshooting
+## Troubleshooting
 
-#### `Cannot find module '../../../vendor/ShortCircuit-Packages/dist/packages.json'`
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `Cannot find module '../../../vendor/ShortCircuit-Packages/dist/packages.json'` | Submodule missing | `git submodule update --init --recursive` |
+| `package validation failed: ... is not declared in ...` | Export name in manifest ≠ source declaration | Ensure names match exactly |
+| `package validation failed: ... does not match package.json ...` | `name`/`version` mismatch between `package.json` and `manifest.json` | Sync both files |
+| `E601` / duplicate export | Two packages export same name | Rename or disable one package |
+| `E602 Cannot import ...` | Package not installed/disabled | Enable in studio Packages manager or add correct `IMPORT` |
+| `E200 ... is reserved` | User signal/circuit name conflicts with enabled package export | Rename user item or disable package |
+| Test wrapper fails to compile | Wrapper uses wrong export name or missing dependency | Check wrapper and `manifest.json` dependencies |
 
-The submodule is missing. Run:
+---
 
-```bash
-git submodule update --init --recursive
+## Minimal Checklist
+
 ```
-
-or clone with `--recurse-submodules`.
-
-#### `package validation failed: ... is not declared in ...`
-
-The exported name in `manifest.json` does not match the `MACRO` or `CIRCUIT`
-declaration in the source file. Names must match exactly.
-
-#### `package validation failed: ... does not match package.json ...`
-
-The `name` or `version` fields differ between `package.json` and
-`manifest.json`.
-
-#### `E601` or a duplicate export error
-
-Export names must be unique across the enabled catalog. Two packages cannot
-export the same macro name.
-
-#### `E602 Cannot import ...`
-
-The package is not installed, disabled, or not enabled for the project. Enable
-it in the studio **Packages** manager or add the correct `IMPORT`.
-
-#### `E200 ... is reserved`
-
-Package macro and circuit export names are reserved while the package is
-enabled. Rename the user circuit or signal, or disable the package.
-
-#### A package source compiles but the test wrapper does not
-
-Package tests are compiled with imports for the package and its dependencies.
-Check that the wrapper uses the correct exported name and that every dependency
-is listed in both `package.json` and `manifest.json`.
-
----
-
-### Minimal checklist
-
-```text
 [ ] Run npm run package:init (or create packages/<name>/ by hand)
 [ ] Put implementations in .lf files
-[ ] Point every export at its source
-[ ] Add docs and tests
-[ ] Add the manifest to registry.json (package:init does this by default)
+[ ] Point every export at its source file
+[ ] Add docs (docs/<export>.md) and tests (tests/<export>.test.lf)
+[ ] Add manifest to registry.json (package:init does this by default)
 [ ] Run npm run package:build
 [ ] Run npm run package:test
-[ ] Commit and push the package repository
-[ ] Commit the updated submodule pointer in the main repository
+[ ] Commit and push package repository
+[ ] Commit updated submodule pointer in main repository
 ```
 
 ---
 
 ## License
 
-MIT. See the main Short Circuit repository.
+MIT — see the main [Short Circuit repository](https://github.com/samTime101/ShortCircuit).
+
+---
+
+## Links
+
+- **Main Repository**: [github.com/samTime101/ShortCircuit](https://github.com/samTime101/ShortCircuit)
+- **Package Format Spec**: [SPEC.md](SPEC.md)
+- **JSON Schemas**: [`schemas/`](schemas/)
+- **Package Authoring Guide**: [../docs/PACKAGES.md](../docs/PACKAGES.md)
